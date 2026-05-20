@@ -13,6 +13,11 @@ export const LABEL_HEIGHT_NO_IMAGE = 320;
 // Sephira sphere radius.
 export const SEPHIRA_RADIUS = 0.45;
 
+// Horizontal distance from the central pillar to the side pillars (Mercy
+// right, Severity left). Tweak to adjust tree width without touching
+// individual sephira positions.
+export const PILLAR_X_OFFSET = 2.0;
+
 // Path cylinder radii. The pick cylinder is invisible but raycastable so
 // touch targets remain comfortable on mobile.
 export const PATH_VISIBLE_RADIUS = 0.05;

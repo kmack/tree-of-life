@@ -4,6 +4,7 @@
  * the rendering layer composes world + id into `SephiraKey` for selection.
  */
 
+import { PILLAR_X_OFFSET } from './constants';
 import type { Pillar, SephiraId } from './types';
 
 export type Sephira = {
@@ -43,7 +44,7 @@ export const sephiroth: readonly Sephira[] = [
     title: 'Wisdom',
     hebrewName: 'חכמה',
     pillar: 'mercy',
-    pos: [1.5, 3, 0],
+    pos: [PILLAR_X_OFFSET, 3, 0],
     botaColor: '#A6A6A6',
     divineName: 'Yah',
     archangel: 'Raziel',
@@ -56,7 +57,7 @@ export const sephiroth: readonly Sephira[] = [
     title: 'Understanding',
     hebrewName: 'בינה',
     pillar: 'severity',
-    pos: [-1.5, 3, 0],
+    pos: [-PILLAR_X_OFFSET, 3, 0],
     botaColor: '#000000',
     divineName: 'YHVH Elohim',
     archangel: 'Tzaphkiel',
@@ -69,7 +70,7 @@ export const sephiroth: readonly Sephira[] = [
     title: 'Mercy',
     hebrewName: 'חסד',
     pillar: 'mercy',
-    pos: [1.5, 1.5, 0],
+    pos: [PILLAR_X_OFFSET, 1.5, 0],
     botaColor: '#1F4FFF',
     divineName: 'El',
     archangel: 'Tzadkiel',
@@ -82,7 +83,7 @@ export const sephiroth: readonly Sephira[] = [
     title: 'Severity',
     hebrewName: 'גבורה',
     pillar: 'severity',
-    pos: [-1.5, 1.5, 0],
+    pos: [-PILLAR_X_OFFSET, 1.5, 0],
     botaColor: '#D32F2F',
     divineName: 'Elohim Gibor',
     archangel: 'Khamael',
@@ -108,7 +109,7 @@ export const sephiroth: readonly Sephira[] = [
     title: 'Victory',
     hebrewName: 'נצח',
     pillar: 'mercy',
-    pos: [1.5, -1.5, 0],
+    pos: [PILLAR_X_OFFSET, -1.5, 0],
     botaColor: '#2E7D32',
     divineName: 'YHVH Tzabaoth',
     archangel: 'Haniel',
@@ -121,7 +122,7 @@ export const sephiroth: readonly Sephira[] = [
     title: 'Splendor',
     hebrewName: 'הוד',
     pillar: 'severity',
-    pos: [-1.5, -1.5, 0],
+    pos: [-PILLAR_X_OFFSET, -1.5, 0],
     botaColor: '#F57C00',
     divineName: 'Elohim Tzabaoth',
     archangel: 'Michael',
