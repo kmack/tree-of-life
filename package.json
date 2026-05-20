@@ -34,6 +34,70 @@
     "react-dom": "^19.2.0",
     "three": "^0.184.0"
   },
+  "overrides": {
+    "@radix-ui/react-portal": {
+      "react": "^19.2.0",
+      "react-dom": "^19.2.0"
+    },
+    "@radix-ui/react-tooltip": {
+      "react": "^19.2.0",
+      "react-dom": "^19.2.0"
+    },
+    "@radix-ui/react-primitive": {
+      "react": "^19.2.0",
+      "react-dom": "^19.2.0"
+    },
+    "@radix-ui/react-compose-refs": {
+      "react": "^19.2.0"
+    },
+    "@radix-ui/react-context": {
+      "react": "^19.2.0"
+    },
+    "@radix-ui/react-dismissable-layer": {
+      "react": "^19.2.0",
+      "react-dom": "^19.2.0"
+    },
+    "@radix-ui/react-id": {
+      "react": "^19.2.0"
+    },
+    "@radix-ui/react-popper": {
+      "react": "^19.2.0",
+      "react-dom": "^19.2.0"
+    },
+    "@radix-ui/react-presence": {
+      "react": "^19.2.0",
+      "react-dom": "^19.2.0"
+    },
+    "@radix-ui/react-slot": {
+      "react": "^19.2.0"
+    },
+    "@radix-ui/react-use-controllable-state": {
+      "react": "^19.2.0"
+    },
+    "@radix-ui/react-visually-hidden": {
+      "react": "^19.2.0",
+      "react-dom": "^19.2.0"
+    },
+    "@radix-ui/react-arrow": {
+      "react": "^19.2.0",
+      "react-dom": "^19.2.0"
+    },
+    "@radix-ui/react-use-callback-ref": {
+      "react": "^19.2.0"
+    },
+    "@radix-ui/react-use-escape-keydown": {
+      "react": "^19.2.0"
+    },
+    "@radix-ui/react-use-layout-effect": {
+      "react": "^19.2.0"
+    },
+    "@radix-ui/react-use-rect": {
+      "react": "^19.2.0"
+    },
+    "@radix-ui/react-use-size": {
+      "react": "^19.2.0"
+    }
+  },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.38.0",
