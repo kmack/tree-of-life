@@ -1,12 +1,13 @@
 /**
  * @fileoverview Sphere mesh for a single Sephira with hover/select interaction
- * and a billboarded text label.
+ * and a camera-facing text label that orbits the sphere so the sphere never
+ * clips into the text from any view angle.
  */
 
 import { Billboard, Text } from '@react-three/drei';
-import { type ThreeEvent } from '@react-three/fiber';
+import { type ThreeEvent, useFrame } from '@react-three/fiber';
 import * as React from 'react';
-import type * as THREE from 'three';
+import * as THREE from 'three';
 
 import { SEPHIRA_LABEL_OFFSET, SEPHIRA_RADIUS } from '../data/constants';
 import type { Sephira } from '../data/sephiroth';
@@ -48,7 +49,26 @@ export function SephiraSphere({
   const labelColor = isDark ? '#FFFFFF' : '#222222';
   const labelOutline = isDark ? '#000000' : '#FFFFFF';
 
-  const labelY = sephira.pos[1] + SEPHIRA_RADIUS + SEPHIRA_LABEL_OFFSET;
+  // Park the label on the camera-facing side of the sphere each frame, so
+  // it always sits in front of the geometry instead of being pinned above
+  // (where an orbit could put the sphere on top of it).
+  const labelRef = React.useRef<THREE.Group>(null);
+  const tmpToCamera = React.useRef(new THREE.Vector3()).current;
+  const sphereCenter = React.useMemo(
+    () => new THREE.Vector3(...sephira.pos),
+    [sephira.pos]
+  );
+  const labelDistance = SEPHIRA_RADIUS + SEPHIRA_LABEL_OFFSET;
+  useFrame(({ camera }) => {
+    const group = labelRef.current;
+    if (!group) return;
+    tmpToCamera.copy(camera.position).sub(sphereCenter);
+    if (tmpToCamera.lengthSq() < 1e-8) tmpToCamera.set(0, 0, 1);
+    tmpToCamera.normalize();
+    group.position
+      .copy(sphereCenter)
+      .addScaledVector(tmpToCamera, labelDistance);
+  });
 
   const handleDown = React.useCallback(
     (e: ThreeEvent<PointerEvent>) => {
@@ -96,7 +116,7 @@ export function SephiraSphere({
       </mesh>
 
       {showLabel && (
-        <Billboard position={[sephira.pos[0], labelY, sephira.pos[2]]}>
+        <Billboard ref={labelRef}>
           <Text
             fontSize={0.22}
             color={labelColor}
