@@ -28,3 +28,8 @@ export const SEPHIRA_LABEL_OFFSET = 0.35;
 
 // Distance from a path's midpoint to its label, perpendicular to the path.
 export const PATH_LABEL_OFFSET = 0.4;
+
+// How far Tarot key cards float in front of the tree plane (toward the
+// camera at +Z). Must clear SEPHIRA_RADIUS so cards never intersect the
+// sephiroth spheres or path cylinders.
+export const TAROT_KEY_Z_OFFSET = 0.1;

@@ -1,11 +1,11 @@
 /**
  * @fileoverview Cylinder mesh for a single Tree of Life path. Renders a thin
  * visible cylinder for display plus an invisible larger pick cylinder so the
- * touch target stays comfortable on mobile. Includes a billboarded RichLabel
- * showing the path's Tarot key correspondence.
+ * touch target stays comfortable on mobile. Includes a RichLabel showing the
+ * path's Tarot key correspondence, aligned to the path direction and floated
+ * in front of the tree plane so it never intersects the geometry.
  */
 
-import { Billboard } from '@react-three/drei';
 import { type ThreeEvent } from '@react-three/fiber';
 import * as React from 'react';
 import * as THREE from 'three';
@@ -13,9 +13,9 @@ import * as THREE from 'three';
 import {
   LABEL_HEIGHT_WITH_IMAGE,
   LABEL_WIDTH_WITH_IMAGE,
-  PATH_LABEL_OFFSET,
   PATH_PICK_RADIUS,
   PATH_VISIBLE_RADIUS,
+  TAROT_KEY_Z_OFFSET,
 } from '../data/constants';
 import { getSpec } from '../data/label-spec';
 import type { TreePath } from '../data/paths';
@@ -121,7 +121,7 @@ export function PathCylinder({
   );
   const showFullLabel = isHovered || isSelected;
 
-  const { mid, quat, length, labelPos } = React.useMemo(() => {
+  const { mid, quat, length, labelPos, labelRotation } = React.useMemo(() => {
     const a = new THREE.Vector3(...fromPos);
     const b = new THREE.Vector3(...toPos);
     const midpoint = a.clone().add(b).multiplyScalar(0.5);
@@ -130,22 +130,31 @@ export function PathCylinder({
     const dirNorm = dir.clone().normalize();
     const q = new THREE.Quaternion().setFromUnitVectors(UP, dirNorm);
 
-    // Pick a stable perpendicular for label offset. Cross with world Z to get
-    // an in-plane offset for the (x,y) tree; if the path is parallel to Z (it
-    // never is in v1), fall back to world X.
-    const z = new THREE.Vector3(0, 0, 1);
-    let perp = new THREE.Vector3().crossVectors(dirNorm, z);
-    if (perp.lengthSq() < 1e-6) {
-      perp = new THREE.Vector3(1, 0, 0);
+    // Float the Tarot card just in front of the tree plane (toward the
+    // camera at +Z) so the sephiroth spheres and path cylinders pass behind
+    // it instead of intersecting.
+    const lp = midpoint.clone().setZ(midpoint.z + TAROT_KEY_Z_OFFSET);
+
+    // Align the card's vertical axis with the path direction so the top of
+    // the card points along the path. Pick the orientation that keeps the
+    // card upright — i.e. the one whose "up" has a non-negative Y — so cards
+    // on diagonal paths read top-to-bottom rather than upside-down. For
+    // horizontal paths (Daleth, Teth, Peh) prefer the orientation whose up
+    // points in +X, which keeps the cards reading left-to-right.
+    let cardUp = new THREE.Vector2(dirNorm.x, dirNorm.y);
+    if (Math.abs(cardUp.y) < 1e-6) {
+      if (cardUp.x < 0) cardUp = cardUp.multiplyScalar(-1);
+    } else if (cardUp.y < 0) {
+      cardUp = cardUp.multiplyScalar(-1);
     }
-    perp.normalize();
-    const lp = midpoint.clone().add(perp.multiplyScalar(PATH_LABEL_OFFSET));
+    const angle = Math.atan2(cardUp.y, cardUp.x) - Math.PI / 2;
 
     return {
       mid: midpoint,
       quat: q,
       length: len,
       labelPos: lp,
+      labelRotation: [0, 0, angle] as [number, number, number],
     };
   }, [fromPos, toPos]);
 
@@ -210,7 +219,7 @@ export function PathCylinder({
       </mesh>
 
       {showLabel && (
-        <Billboard position={labelPos.toArray()}>
+        <group position={labelPos.toArray()} rotation={labelRotation}>
           {/* Image-only label: visible by default; both textures are
               pre-baked so toggling visibility on hover is instant. */}
           {imageOnlyConfig && (
@@ -247,7 +256,7 @@ export function PathCylinder({
               scale={0.9}
             />
           </group>
-        </Billboard>
+        </group>
       )}
     </group>
   );
