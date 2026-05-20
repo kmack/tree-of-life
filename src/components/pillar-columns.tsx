@@ -6,6 +6,8 @@
 
 import * as React from 'react';
 
+import { PILLAR_X_OFFSET } from '../data/constants';
+
 interface PillarColumnsProps {
   visible: boolean;
   opacity?: number;
@@ -17,9 +19,9 @@ const PILLAR_DEPTH = 0.06;
 const PILLAR_Y = -0.5; // center between Kether (4) and Malkuth (-5)
 
 const PILLARS: ReadonlyArray<{ x: number; color: string; key: string }> = [
-  { x: -1.5, color: '#222222', key: 'severity' },
+  { x: -PILLAR_X_OFFSET, color: '#222222', key: 'severity' },
   { x: 0, color: '#888888', key: 'mildness' },
-  { x: 1.5, color: '#DDDDDD', key: 'mercy' },
+  { x: PILLAR_X_OFFSET, color: '#DDDDDD', key: 'mercy' },
 ];
 
 export function PillarColumns({

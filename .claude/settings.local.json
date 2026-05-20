@@ -31,7 +31,8 @@
       "Read(//private/tmp/nptest/**)",
       "Bash(NODE_OPTIONS=\"--trace-deprecation\" npm --prefix /tmp/nptest install --ignore-scripts --no-audit --no-fund --loglevel=warn)",
       "Read(//tmp/**)",
-      "Read(//private/tmp/**)"
+      "Read(//private/tmp/**)",
+      "Bash(git *)"
     ]
   }
 }
