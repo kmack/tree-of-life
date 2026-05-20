@@ -35,6 +35,7 @@
     "three": "^0.184.0"
   },
   "overrides": {
+    "uri-js": "npm:uri-js-replace@^1.0.1",
     "@radix-ui/react-portal": {
       "react": "^19.2.0",
       "react-dom": "^19.2.0"
