@@ -18,8 +18,20 @@ import {
 import { getSpec } from '../data/label-spec';
 import type { TreePath } from '../data/paths';
 import type { PathKey } from '../data/types';
+import type { BackgroundStyle } from '../utils/canvas-texture';
 import { createLabelData } from '../utils/label-factory';
 import { RichLabel } from './rich-label';
+
+const PATH_LABEL_BACKGROUND: BackgroundStyle = {
+  color: 'rgba(96, 96, 96, 0.4)',
+  opacity: 0.45,
+  padding: 12,
+  borderRadius: 8,
+  border: {
+    width: 1,
+    color: 'rgba(255, 255, 255, 0.8)',
+  },
+};
 
 interface PathCylinderProps {
   path: TreePath;
@@ -164,8 +176,8 @@ export function PathCylinder({
             outerPlanet={labelData.outerPlanet}
             outerPlanetGlyph={labelData.outerPlanetGlyph}
             imagePath={labelData.imagePath}
+            background={PATH_LABEL_BACKGROUND}
             doubleSided={doubleSidedLabels}
-            flipY={false}
             scale={0.9}
           />
         </Billboard>
