@@ -11,6 +11,8 @@ import * as React from 'react';
 import * as THREE from 'three';
 
 import {
+  LABEL_HEIGHT_WITH_IMAGE,
+  LABEL_WIDTH_WITH_IMAGE,
   PATH_LABEL_OFFSET,
   PATH_PICK_RADIUS,
   PATH_VISIBLE_RADIUS,
@@ -18,8 +20,63 @@ import {
 import { getSpec } from '../data/label-spec';
 import type { TreePath } from '../data/paths';
 import type { PathKey } from '../data/types';
+import type {
+  BackgroundStyle,
+  CanvasLabelConfig,
+} from '../utils/canvas-texture';
 import { createLabelData } from '../utils/label-factory';
 import { RichLabel } from './rich-label';
+
+const PATH_LABEL_BACKGROUND: BackgroundStyle = {
+  color: 'rgba(96, 96, 96, 0.4)',
+  opacity: 0.45,
+  padding: 12,
+  borderRadius: 8,
+  border: {
+    width: 1,
+    color: 'rgba(255, 255, 255, 0.8)',
+  },
+};
+
+// Source-image crop for major-arcana PNGs. Matches the same crop used in
+// createStructuredHebrewLabel so the card sits in the same spot whether the
+// label is in image-only or full-text mode — only the surrounding text and
+// background appear/disappear on hover.
+const ARCANA_SOURCE_X = 96;
+const ARCANA_SOURCE_Y = 0;
+const ARCANA_SOURCE_WIDTH = 320; // 416 - 96
+const ARCANA_SOURCE_HEIGHT = 512;
+
+function buildImageOnlyConfig(imagePath: string): CanvasLabelConfig {
+  const width = LABEL_WIDTH_WITH_IMAGE;
+  const height = LABEL_HEIGHT_WITH_IMAGE;
+  const aspectRatio = ARCANA_SOURCE_WIDTH / ARCANA_SOURCE_HEIGHT;
+  const cardHeight = height - 190;
+  const cardWidth = Math.floor(cardHeight * aspectRatio);
+  const cardX = (width - cardWidth) / 2;
+  const cardY = 80;
+
+  return {
+    width,
+    height,
+    images: [
+      {
+        src: imagePath,
+        x: cardX,
+        y: cardY,
+        width: cardWidth,
+        height: cardHeight,
+        sourceX: ARCANA_SOURCE_X,
+        sourceY: ARCANA_SOURCE_Y,
+        sourceWidth: ARCANA_SOURCE_WIDTH,
+        sourceHeight: ARCANA_SOURCE_HEIGHT,
+      },
+    ],
+    // Force full RGBA so white image pixels don't render yellow via the
+    // 2-channel alpha-mask path that kicks in for transparent + B&W images.
+    useOptimizedFormat: false,
+  };
+}
 
 interface PathCylinderProps {
   path: TreePath;
@@ -57,6 +114,12 @@ export function PathCylinder({
     () => createLabelData(path.letter),
     [path.letter]
   );
+  const imageOnlyConfig = React.useMemo(
+    () =>
+      labelData.imagePath ? buildImageOnlyConfig(labelData.imagePath) : null,
+    [labelData.imagePath]
+  );
+  const showFullLabel = isHovered || isSelected;
 
   const { mid, quat, length, labelPos } = React.useMemo(() => {
     const a = new THREE.Vector3(...fromPos);
@@ -148,26 +211,42 @@ export function PathCylinder({
 
       {showLabel && (
         <Billboard position={labelPos.toArray()}>
-          <RichLabel
-            title={labelData.title}
-            hebrewLetter={labelData.glyph}
-            letterName={labelData.letterName}
-            assocGlyph={labelData.assocGlyph}
-            assocName={labelData.assocName}
-            colorName={labelData.color}
-            colorValue={labelData.colorValue}
-            note={labelData.note}
-            significance={labelData.significance}
-            gematria={labelData.gematria}
-            alchemy={labelData.alchemy}
-            intelligence={labelData.intelligence}
-            outerPlanet={labelData.outerPlanet}
-            outerPlanetGlyph={labelData.outerPlanetGlyph}
-            imagePath={labelData.imagePath}
-            doubleSided={doubleSidedLabels}
-            flipY={false}
-            scale={0.9}
-          />
+          {/* Image-only label: visible by default; both textures are
+              pre-baked so toggling visibility on hover is instant. */}
+          {imageOnlyConfig && (
+            <group visible={!showFullLabel}>
+              <RichLabel
+                title={labelData.title}
+                canvasConfig={imageOnlyConfig}
+                doubleSided={doubleSidedLabels}
+                scale={0.9}
+              />
+            </group>
+          )}
+          {/* Full label with translucent background and correspondence text:
+              shown when the path is hovered or selected. */}
+          <group visible={showFullLabel}>
+            <RichLabel
+              title={labelData.title}
+              hebrewLetter={labelData.glyph}
+              letterName={labelData.letterName}
+              assocGlyph={labelData.assocGlyph}
+              assocName={labelData.assocName}
+              colorName={labelData.color}
+              colorValue={labelData.colorValue}
+              note={labelData.note}
+              significance={labelData.significance}
+              gematria={labelData.gematria}
+              alchemy={labelData.alchemy}
+              intelligence={labelData.intelligence}
+              outerPlanet={labelData.outerPlanet}
+              outerPlanetGlyph={labelData.outerPlanetGlyph}
+              imagePath={labelData.imagePath}
+              background={PATH_LABEL_BACKGROUND}
+              doubleSided={doubleSidedLabels}
+              scale={0.9}
+            />
+          </group>
         </Billboard>
       )}
     </group>

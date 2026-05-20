@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs grep -l \"label-styles\\\\|EDGE_LABEL_BACKGROUND\\\\|LABEL_SCALE\")",
+      "Bash(find D:/git/cube-of-space/src -type f \\\\\\( -name \"*.tsx\" -o -name \"*.ts\" \\\\\\) | head -40)",
+      "Bash(npx tsc *)",
+      "Bash(npx eslint *)",
+      "Bash(git stash *)"
+    ]
+  }
+}
