@@ -165,10 +165,11 @@ const PULSE_PERIOD_SEC = 6.0;
 const PULSE_AMPLITUDE = 0.1;
 
 // Multipliers applied to the halo's peak intensity when its sephira is the
-// focused element or adjacent to it. Mirrors the boost the sphere's emissive
-// receives so the halo brightens with the rest of the highlighted cluster.
-const FOCUS_INTENSITY_MULTIPLIER = 1.8;
-const ADJACENT_INTENSITY_MULTIPLIER = 1.45;
+// focused element or adjacent to it. The halo carries the highlight — the
+// sphere's emissive stays subtle so we don't shift its true color (and so
+// Binah doesn't go from black to glowing white).
+const FOCUS_INTENSITY_MULTIPLIER = 2.6;
+const ADJACENT_INTENSITY_MULTIPLIER = 1.9;
 
 // Halos are decorative — never let them swallow pointer events from the
 // sphere/path underneath, or hover state will flicker as the cursor crosses

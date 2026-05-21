@@ -39,23 +39,18 @@ export function SephiraSphere({
   const meshRef = React.useRef<THREE.Mesh>(null);
 
   const baseColor = sephira.botaColor;
-  // Emissive: hover/select get the strongest boost; merely-adjacent neighbors
-  // get a softer one so the connected cluster reads as a unit. Black sephiroth
-  // (Binah) emit white instead of their base color — black emissive against a
-  // black sphere is invisible no matter the intensity.
+  // Emissive on the sphere is intentionally subtle — just enough to confirm
+  // the cluster is "lit" without shifting its true color. The halo carries
+  // the actual highlight signal. Binah and other base-black sephiroth emit
+  // nothing, since black is their identity; the halo handles their highlight.
   const isLit = isHovered || isSelected || isAdjacentHighlight;
-  const isBaseBlack = baseColor === '#000000';
-  const emissiveColor = isLit
-    ? isBaseBlack
-      ? '#FFFFFF'
-      : baseColor
-    : '#000000';
+  const emissiveColor = isLit ? baseColor : '#000000';
   const emissiveIntensity = isSelected
-    ? 0.9
+    ? 0.3
     : isHovered
-      ? 0.7
+      ? 0.22
       : isAdjacentHighlight
-        ? 0.55
+        ? 0.15
         : 0.0;
   const scale = isHovered || isSelected ? 1.12 : 1.0;
 
