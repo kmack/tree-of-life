@@ -252,6 +252,7 @@ export default [
             'vertexShader',
             'fragmentShader',
             'raycast',
+            'onBeforeCompile',
           ],
         },
       ],
