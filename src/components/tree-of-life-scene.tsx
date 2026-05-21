@@ -85,14 +85,14 @@ export function TreeOfLifeScene(): React.JSX.Element {
       showPathLabels,
       doubleSidedLabels,
       showPillars,
-      dimNonAdjacent,
+      highlightAdjacent,
     },
   ] = useControls('Display', () => ({
     showSephiraLabels: { value: true, label: 'Sephira Labels' },
     showPathLabels: { value: true, label: 'Path Labels' },
     doubleSidedLabels: { value: true, label: 'Double-Sided Labels' },
     showPillars: { value: true, label: 'Show Pillars' },
-    dimNonAdjacent: { value: true, label: 'Dim Non-Adjacent on Hover' },
+    highlightAdjacent: { value: true, label: 'Highlight Adjacent on Hover' },
   }));
 
   const { showGrid, showAxesHelper } = useControls(
@@ -256,7 +256,7 @@ export function TreeOfLifeScene(): React.JSX.Element {
           world={WORLD}
           selected={selected}
           hovered={hovered}
-          dimNonAdjacent={dimNonAdjacent}
+          highlightAdjacent={highlightAdjacent}
           showSephiraLabels={showSephiraLabels}
           showPathLabels={showPathLabels}
           doubleSidedLabels={doubleSidedLabels}

@@ -18,7 +18,7 @@ interface SephiraSphereProps {
   sephiraKey: SephiraKey;
   isSelected: boolean;
   isHovered: boolean;
-  isDimmed: boolean;
+  isAdjacentHighlight: boolean;
   showLabel: boolean;
   onPointerDown: (sephiraKey: SephiraKey) => void;
   onPointerOver: (sephiraKey: SephiraKey) => void;
@@ -30,7 +30,7 @@ export function SephiraSphere({
   sephiraKey,
   isSelected,
   isHovered,
-  isDimmed,
+  isAdjacentHighlight,
   showLabel,
   onPointerDown,
   onPointerOver,
@@ -39,9 +39,17 @@ export function SephiraSphere({
   const meshRef = React.useRef<THREE.Mesh>(null);
 
   const baseColor = sephira.botaColor;
-  const emissiveColor = isHovered || isSelected ? baseColor : '#000000';
-  const emissiveIntensity = isSelected ? 0.6 : isHovered ? 0.4 : 0.0;
-  const opacity = isDimmed ? 0.35 : 1.0;
+  // Emissive: hover/select get the strongest boost; merely-adjacent neighbors
+  // get a softer one so the connected cluster reads as a unit.
+  const isLit = isHovered || isSelected || isAdjacentHighlight;
+  const emissiveColor = isLit ? baseColor : '#000000';
+  const emissiveIntensity = isSelected
+    ? 0.6
+    : isHovered
+      ? 0.4
+      : isAdjacentHighlight
+        ? 0.25
+        : 0.0;
   const scale = isHovered || isSelected ? 1.12 : 1.0;
 
   // Choose a readable text color: dark sephiroth get a light label, others dark.
@@ -108,8 +116,6 @@ export function SephiraSphere({
           color={baseColor}
           emissive={emissiveColor}
           emissiveIntensity={emissiveIntensity}
-          transparent={isDimmed}
-          opacity={opacity}
           roughness={0.5}
           metalness={0.1}
         />

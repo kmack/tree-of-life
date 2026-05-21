@@ -251,6 +251,7 @@ export default [
             'uniforms',
             'vertexShader',
             'fragmentShader',
+            'raycast',
           ],
         },
       ],

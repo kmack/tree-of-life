@@ -78,16 +78,18 @@ const HALO_FRAGMENT = /* glsl */ `
 
 const PULSE_PERIOD_SEC = 6.0;
 const PULSE_AMPLITUDE = 0.1;
-const DIM_MULTIPLIER = 0.25;
+
+// Halos are decorative — never let them swallow pointer events from the
+// sphere/path underneath, or hover state will flicker as the cursor crosses
+// the halo's bounding plane.
+const noopRaycast = (): void => undefined;
 
 interface SephiraRadianceProps {
   sephira: Sephira;
-  isDimmed: boolean;
 }
 
 export function SephiraRadiance({
   sephira,
-  isDimmed,
 }: SephiraRadianceProps): React.JSX.Element | null {
   const cfg = RADIANCE_BY_ID[sephira.id];
 
@@ -120,12 +122,10 @@ export function SephiraRadiance({
   useFrame(({ clock }) => {
     if (!cfg) return;
     const t = clock.getElapsedTime();
-    const pulse =
+    const k =
       1 +
       Math.sin((t * Math.PI * 2) / PULSE_PERIOD_SEC + cfg.pulsePhase) *
         PULSE_AMPLITUDE;
-    const dimScale = isDimmed ? DIM_MULTIPLIER : 1;
-    const k = pulse * dimScale;
 
     if (outerMatRef.current) {
       outerMatRef.current.uniforms.uIntensity.value = cfg.intensity * k;
@@ -150,7 +150,7 @@ export function SephiraRadiance({
         intensity={cfg.lightIntensity}
       />
       <Billboard>
-        <mesh renderOrder={-2}>
+        <mesh renderOrder={-2} raycast={noopRaycast}>
           <planeGeometry args={[cfg.size * 2, cfg.size * 2]} />
           <shaderMaterial
             ref={outerMatRef}
@@ -163,7 +163,7 @@ export function SephiraRadiance({
             fragmentShader={HALO_FRAGMENT}
           />
         </mesh>
-        <mesh renderOrder={-1}>
+        <mesh renderOrder={-1} raycast={noopRaycast}>
           <planeGeometry args={[cfg.size, cfg.size]} />
           <shaderMaterial
             ref={innerMatRef}

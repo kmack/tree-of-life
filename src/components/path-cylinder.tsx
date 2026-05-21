@@ -86,7 +86,7 @@ interface PathCylinderProps {
   toPos: readonly [number, number, number];
   isSelected: boolean;
   isHovered: boolean;
-  isDimmed: boolean;
+  isAdjacentHighlight: boolean;
   showLabel: boolean;
   doubleSidedLabels: boolean;
   onPointerDown: (pathKey: PathKey) => void;
@@ -103,7 +103,7 @@ export function PathCylinder({
   toPos,
   isSelected,
   isHovered,
-  isDimmed,
+  isAdjacentHighlight,
   showLabel,
   doubleSidedLabels,
   onPointerDown,
@@ -187,9 +187,15 @@ export function PathCylinder({
   });
 
   const baseColor = spec.colorValue;
-  const emissiveColor = isHovered || isSelected ? baseColor : '#000000';
-  const emissiveIntensity = isSelected ? 0.7 : isHovered ? 0.45 : 0.0;
-  const opacity = isDimmed ? 0.3 : 1.0;
+  const isLit = isHovered || isSelected || isAdjacentHighlight;
+  const emissiveColor = isLit ? baseColor : '#000000';
+  const emissiveIntensity = isSelected
+    ? 0.7
+    : isHovered
+      ? 0.45
+      : isAdjacentHighlight
+        ? 0.3
+        : 0.0;
   const visibleRadius =
     isHovered || isSelected ? PATH_VISIBLE_RADIUS * 1.5 : PATH_VISIBLE_RADIUS;
 
@@ -224,8 +230,6 @@ export function PathCylinder({
           color={baseColor}
           emissive={emissiveColor}
           emissiveIntensity={emissiveIntensity}
-          transparent={isDimmed}
-          opacity={opacity}
           roughness={0.45}
           metalness={0.15}
         />
