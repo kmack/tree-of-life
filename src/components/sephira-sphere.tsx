@@ -40,15 +40,22 @@ export function SephiraSphere({
 
   const baseColor = sephira.botaColor;
   // Emissive: hover/select get the strongest boost; merely-adjacent neighbors
-  // get a softer one so the connected cluster reads as a unit.
+  // get a softer one so the connected cluster reads as a unit. Black sephiroth
+  // (Binah) emit white instead of their base color — black emissive against a
+  // black sphere is invisible no matter the intensity.
   const isLit = isHovered || isSelected || isAdjacentHighlight;
-  const emissiveColor = isLit ? baseColor : '#000000';
+  const isBaseBlack = baseColor === '#000000';
+  const emissiveColor = isLit
+    ? isBaseBlack
+      ? '#FFFFFF'
+      : baseColor
+    : '#000000';
   const emissiveIntensity = isSelected
-    ? 0.6
+    ? 0.9
     : isHovered
-      ? 0.4
+      ? 0.7
       : isAdjacentHighlight
-        ? 0.25
+        ? 0.55
         : 0.0;
   const scale = isHovered || isSelected ? 1.12 : 1.0;
 

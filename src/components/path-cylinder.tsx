@@ -190,11 +190,11 @@ export function PathCylinder({
   const isLit = isHovered || isSelected || isAdjacentHighlight;
   const emissiveColor = isLit ? baseColor : '#000000';
   const emissiveIntensity = isSelected
-    ? 0.7
+    ? 1.1
     : isHovered
-      ? 0.45
+      ? 0.8
       : isAdjacentHighlight
-        ? 0.3
+        ? 0.6
         : 0.0;
   const visibleRadius =
     isHovered || isSelected ? PATH_VISIBLE_RADIUS * 1.5 : PATH_VISIBLE_RADIUS;

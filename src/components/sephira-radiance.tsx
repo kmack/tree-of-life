@@ -164,6 +164,12 @@ const RAINBOW_FRAGMENT = /* glsl */ `
 const PULSE_PERIOD_SEC = 6.0;
 const PULSE_AMPLITUDE = 0.1;
 
+// Multipliers applied to the halo's peak intensity when its sephira is the
+// focused element or adjacent to it. Mirrors the boost the sphere's emissive
+// receives so the halo brightens with the rest of the highlighted cluster.
+const FOCUS_INTENSITY_MULTIPLIER = 1.8;
+const ADJACENT_INTENSITY_MULTIPLIER = 1.45;
+
 // Halos are decorative — never let them swallow pointer events from the
 // sphere/path underneath, or hover state will flicker as the cursor crosses
 // the halo's bounding plane.
@@ -171,25 +177,36 @@ const noopRaycast = (): void => undefined;
 
 interface SephiraRadianceProps {
   sephira: Sephira;
+  isFocused: boolean;
+  isAdjacentHighlight: boolean;
 }
 
 export function SephiraRadiance({
   sephira,
+  isFocused,
+  isAdjacentHighlight,
 }: SephiraRadianceProps): React.JSX.Element {
   const cfg = RADIANCE_BY_ID[sephira.id];
+  const focusMul = isFocused
+    ? FOCUS_INTENSITY_MULTIPLIER
+    : isAdjacentHighlight
+      ? ADJACENT_INTENSITY_MULTIPLIER
+      : 1;
   return cfg.kind === 'rainbow' ? (
-    <RainbowHalo position={sephira.pos} cfg={cfg} />
+    <RainbowHalo position={sephira.pos} cfg={cfg} focusMul={focusMul} />
   ) : (
-    <TintHalo position={sephira.pos} cfg={cfg} />
+    <TintHalo position={sephira.pos} cfg={cfg} focusMul={focusMul} />
   );
 }
 
 function TintHalo({
   position,
   cfg,
+  focusMul,
 }: {
   position: Sephira['pos'];
   cfg: TintConfig;
+  focusMul: number;
 }): React.JSX.Element {
   const outerMatRef = React.useRef<THREE.ShaderMaterial>(null);
   const innerMatRef = React.useRef<THREE.ShaderMaterial>(null);
@@ -217,9 +234,10 @@ function TintHalo({
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
     const k =
-      1 +
-      Math.sin((t * Math.PI * 2) / PULSE_PERIOD_SEC + cfg.pulsePhase) *
-        PULSE_AMPLITUDE;
+      (1 +
+        Math.sin((t * Math.PI * 2) / PULSE_PERIOD_SEC + cfg.pulsePhase) *
+          PULSE_AMPLITUDE) *
+      focusMul;
 
     if (outerMatRef.current) {
       outerMatRef.current.uniforms.uIntensity.value = cfg.intensity * k;
@@ -278,9 +296,11 @@ function TintHalo({
 function RainbowHalo({
   position,
   cfg,
+  focusMul,
 }: {
   position: Sephira['pos'];
   cfg: RainbowConfig;
+  focusMul: number;
 }): React.JSX.Element {
   const matRef = React.useRef<THREE.ShaderMaterial>(null);
 
@@ -292,9 +312,10 @@ function RainbowHalo({
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
     const k =
-      1 +
-      Math.sin((t * Math.PI * 2) / PULSE_PERIOD_SEC + cfg.pulsePhase) *
-        PULSE_AMPLITUDE;
+      (1 +
+        Math.sin((t * Math.PI * 2) / PULSE_PERIOD_SEC + cfg.pulsePhase) *
+          PULSE_AMPLITUDE) *
+      focusMul;
     if (matRef.current) {
       matRef.current.uniforms.uIntensity.value = cfg.intensity * k;
     }

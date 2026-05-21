@@ -104,15 +104,20 @@ export function TreeOfLifeGraph({
           selected?.kind === 'sephira' && selected.key === sephiraKey;
         const isHovered =
           hovered?.kind === 'sephira' && hovered.key === sephiraKey;
+        const adjacent = isSephiraAdjacent(s.id);
         return (
           <React.Fragment key={sephiraKey}>
-            <SephiraRadiance sephira={s} />
+            <SephiraRadiance
+              sephira={s}
+              isFocused={isSelected || isHovered}
+              isAdjacentHighlight={adjacent && !(isSelected || isHovered)}
+            />
             <SephiraSphere
               sephira={s}
               sephiraKey={sephiraKey}
               isSelected={isSelected}
               isHovered={isHovered}
-              isAdjacentHighlight={isSephiraAdjacent(s.id)}
+              isAdjacentHighlight={adjacent}
               showLabel={showSephiraLabels}
               onPointerDown={onSephiraDown}
               onPointerOver={onSephiraOver}
