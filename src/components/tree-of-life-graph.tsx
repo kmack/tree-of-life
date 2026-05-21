@@ -17,6 +17,7 @@ import type {
   World,
 } from '../data/types';
 import { PathCylinder } from './path-cylinder';
+import { SephiraRadiance } from './sephira-radiance';
 import { SephiraSphere } from './sephira-sphere';
 
 interface TreeOfLifeGraphProps {
@@ -103,19 +104,22 @@ export function TreeOfLifeGraph({
           selected?.kind === 'sephira' && selected.key === sephiraKey;
         const isHovered =
           hovered?.kind === 'sephira' && hovered.key === sephiraKey;
+        const dimmed = isSephiraDimmed(s.id);
         return (
-          <SephiraSphere
-            key={sephiraKey}
-            sephira={s}
-            sephiraKey={sephiraKey}
-            isSelected={isSelected}
-            isHovered={isHovered}
-            isDimmed={isSephiraDimmed(s.id)}
-            showLabel={showSephiraLabels}
-            onPointerDown={onSephiraDown}
-            onPointerOver={onSephiraOver}
-            onPointerOut={onSephiraOut}
-          />
+          <React.Fragment key={sephiraKey}>
+            <SephiraRadiance sephira={s} isDimmed={dimmed} />
+            <SephiraSphere
+              sephira={s}
+              sephiraKey={sephiraKey}
+              isSelected={isSelected}
+              isHovered={isHovered}
+              isDimmed={dimmed}
+              showLabel={showSephiraLabels}
+              onPointerDown={onSephiraDown}
+              onPointerOver={onSephiraOver}
+              onPointerOut={onSephiraOut}
+            />
+          </React.Fragment>
         );
       })}
       {paths.map((p) => {
