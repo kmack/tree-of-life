@@ -269,7 +269,7 @@ function TintHalo({
             ref={outerMatRef}
             transparent
             depthWrite={false}
-            depthTest={false}
+            depthTest={true}
             blending={THREE.AdditiveBlending}
             uniforms={outerUniforms}
             vertexShader={HALO_VERTEX}
@@ -282,7 +282,7 @@ function TintHalo({
             ref={innerMatRef}
             transparent
             depthWrite={false}
-            depthTest={false}
+            depthTest={true}
             blending={THREE.AdditiveBlending}
             uniforms={innerUniforms}
             vertexShader={HALO_VERTEX}
@@ -331,7 +331,7 @@ function RainbowHalo({
             ref={matRef}
             transparent
             depthWrite={false}
-            depthTest={false}
+            depthTest={true}
             blending={THREE.AdditiveBlending}
             uniforms={uniforms}
             vertexShader={HALO_VERTEX}
