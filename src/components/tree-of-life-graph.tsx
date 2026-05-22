@@ -17,13 +17,14 @@ import type {
   World,
 } from '../data/types';
 import { PathCylinder } from './path-cylinder';
+import { SephiraRadiance } from './sephira-radiance';
 import { SephiraSphere } from './sephira-sphere';
 
 interface TreeOfLifeGraphProps {
   world: World;
   selected: Selection;
   hovered: Selection;
-  dimNonAdjacent: boolean;
+  highlightAdjacent: boolean;
   showSephiraLabels: boolean;
   showPathLabels: boolean;
   doubleSidedLabels: boolean;
@@ -59,7 +60,7 @@ export function TreeOfLifeGraph({
   world,
   selected,
   hovered,
-  dimNonAdjacent,
+  highlightAdjacent,
   showSephiraLabels,
   showPathLabels,
   doubleSidedLabels,
@@ -70,29 +71,29 @@ export function TreeOfLifeGraph({
   onPathOver,
   onPathOut,
 }: TreeOfLifeGraphProps): React.JSX.Element {
-  // Determine the highlighted element (selection wins over hover for dim logic).
+  // Selection wins over hover for highlight logic.
   const focus = selected ?? hovered;
 
-  const isSephiraDimmed = (id: SephiraId): boolean => {
-    if (!dimNonAdjacent || !focus) return false;
+  // True for the focused element itself and anything connected to it.
+  const isSephiraAdjacent = (id: SephiraId): boolean => {
+    if (!highlightAdjacent || !focus) return false;
     if (focus.kind === 'sephira') {
-      if (focus.id === id) return false;
-      return !SEPHIRA_ADJACENCY.get(focus.id)!.has(id);
+      if (focus.id === id) return true;
+      return SEPHIRA_ADJACENCY.get(focus.id)!.has(id);
     }
-    // Path focus: a sephira is "adjacent" if it's an endpoint of the path.
     const p = paths.find((x) => x.pathNumber === focus.pathNumber);
     if (!p) return false;
-    return p.from !== id && p.to !== id;
+    return p.from === id || p.to === id;
   };
 
-  const isPathDimmed = (pathNumber: number): boolean => {
-    if (!dimNonAdjacent || !focus) return false;
+  const isPathAdjacent = (pathNumber: number): boolean => {
+    if (!highlightAdjacent || !focus) return false;
     const p = paths.find((x) => x.pathNumber === pathNumber);
     if (!p) return false;
     if (focus.kind === 'sephira') {
-      return p.from !== focus.id && p.to !== focus.id;
+      return p.from === focus.id || p.to === focus.id;
     }
-    return p.pathNumber !== focus.pathNumber;
+    return p.pathNumber === focus.pathNumber;
   };
 
   return (
@@ -103,19 +104,26 @@ export function TreeOfLifeGraph({
           selected?.kind === 'sephira' && selected.key === sephiraKey;
         const isHovered =
           hovered?.kind === 'sephira' && hovered.key === sephiraKey;
+        const adjacent = isSephiraAdjacent(s.id);
         return (
-          <SephiraSphere
-            key={sephiraKey}
-            sephira={s}
-            sephiraKey={sephiraKey}
-            isSelected={isSelected}
-            isHovered={isHovered}
-            isDimmed={isSephiraDimmed(s.id)}
-            showLabel={showSephiraLabels}
-            onPointerDown={onSephiraDown}
-            onPointerOver={onSephiraOver}
-            onPointerOut={onSephiraOut}
-          />
+          <React.Fragment key={sephiraKey}>
+            <SephiraRadiance
+              sephira={s}
+              isFocused={isSelected || isHovered}
+              isAdjacentHighlight={adjacent && !(isSelected || isHovered)}
+            />
+            <SephiraSphere
+              sephira={s}
+              sephiraKey={sephiraKey}
+              isSelected={isSelected}
+              isHovered={isHovered}
+              isAdjacentHighlight={adjacent}
+              showLabel={showSephiraLabels}
+              onPointerDown={onSephiraDown}
+              onPointerOver={onSephiraOver}
+              onPointerOut={onSephiraOut}
+            />
+          </React.Fragment>
         );
       })}
       {paths.map((p) => {
@@ -134,7 +142,7 @@ export function TreeOfLifeGraph({
             toPos={toPos}
             isSelected={isSelected}
             isHovered={isHovered}
-            isDimmed={isPathDimmed(p.pathNumber)}
+            isAdjacentHighlight={isPathAdjacent(p.pathNumber)}
             showLabel={showPathLabels}
             doubleSidedLabels={doubleSidedLabels}
             onPointerDown={onPathDown}
